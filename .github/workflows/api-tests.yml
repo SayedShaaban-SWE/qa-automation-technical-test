@@ -1,0 +1,46 @@
+name: API Tests (Task 1)
+
+# Task 1 only. The mobile suite needs an emulator, which belongs on a hosted device
+# farm rather than a GitHub runner - see task2-mobile-automation/README.md.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # The endpoint under test belongs to a third party, so most of the value of this
+    # suite is in detecting *their* regressions. A daily run is what delivers that.
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: task1-api-automation
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run the suite
+        run: mvn -B test
+
+      - name: Report on the known defects
+        # Never fails the build: these tests are expected to fail until the API is fixed.
+        # Their job is to tell us the moment one of them starts passing.
+        if: always()
+        run: mvn -B test -Dexcluded.groups=none -Dsurefire.failIfNoSpecifiedTests=false || true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: task1-api-automation/target/surefire-reports/

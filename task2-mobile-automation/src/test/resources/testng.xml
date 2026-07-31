@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<!--
+  Default suite: one Android device, sequential.
+
+  Parallelism is intentionally left off here. The framework supports it (the driver lives in a
+  ThreadLocal), but a single emulator cannot serve two sessions at once - turning it on without
+  adding devices trades reliability for nothing. To run across devices, duplicate the <test> block
+  with a different device.name parameter and set parallel="tests".
+-->
+<suite name="Wikipedia Mobile Automation" verbose="1">
+
+    <listeners>
+        <listener class-name="com.sayed.wikipedia.listeners.ScreenshotListener"/>
+        <listener class-name="com.sayed.wikipedia.listeners.RetryListener"/>
+    </listeners>
+
+    <test name="Reading list scenario - Android">
+        <classes>
+            <class name="com.sayed.wikipedia.tests.SaveArticleToReadingListTest"/>
+        </classes>
+    </test>
+
+</suite>

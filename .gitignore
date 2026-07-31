@@ -1,0 +1,28 @@
+# Build output
+target/
+build/
+out/
+
+# Test artefacts
+allure-results/
+allure-report/
+screenshots/
+*.log
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local overrides (never commit device- or machine-specific config)
+local.properties
+*.local.properties

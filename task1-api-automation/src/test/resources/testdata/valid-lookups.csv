@@ -1,0 +1,10 @@
+countryCode,postalCode,expectedCountryName,expectedCountryAbbreviation,expectedPlaceName
+us,90210,United States,US,Beverly Hills
+gb,B1,Great Britain,GB,Birmingham
+de,10115,Germany,DE,Berlin
+fr,75001,France,FR,Paris 01 Louvre
+es,28001,Spain,ES,Madrid
+it,00100,Italy,IT,Roma
+jp,100-0001,Japan,JP,Chiyoda
+in,110001,India,IN,Janpath
+br,01000-000,Brazil,BR,São Paulo

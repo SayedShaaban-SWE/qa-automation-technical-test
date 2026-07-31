@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Zippopotam.us postal code lookup response",
+  "description": "Contract for a successful GET /{country}/{postalCode}. 'additionalProperties: false' is intentional: a silently added or renamed field is a breaking contract change and should fail the build.",
+  "type": "object",
+  "required": ["post code", "country", "country abbreviation", "places"],
+  "additionalProperties": false,
+  "properties": {
+    "post code": {
+      "type": "string",
+      "minLength": 1
+    },
+    "country": {
+      "type": "string",
+      "minLength": 1
+    },
+    "country abbreviation": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}$"
+    },
+    "places": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["place name", "longitude", "latitude", "state", "state abbreviation"],
+        "additionalProperties": false,
+        "properties": {
+          "place name": {
+            "type": "string"
+          },
+          "longitude": {
+            "type": "string",
+            "pattern": "^-?[0-9]+(\\.[0-9]+)?$"
+          },
+          "latitude": {
+            "type": "string",
+            "pattern": "^-?[0-9]+(\\.[0-9]+)?$"
+          },
+          "state": {
+            "type": ["string", "null"]
+          },
+          "state abbreviation": {
+            "type": ["string", "null"]
+          }
+        }
+      }
+    }
+  }
+}

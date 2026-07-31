@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.sayed</groupId>
+    <artifactId>task2-mobile-automation</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>Task 2 :: Wikipedia Mobile Automation</name>
+    <description>Appium + TestNG page-object framework automating "save an article to a reading list"</description>
+
+    <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <appium.version>9.4.0</appium.version>
+        <!--
+          Pinned deliberately. io.appium:java-client declares Selenium as an open range
+          ("[4.26.0, 5.0)"), so an unpinned build resolves whatever Selenium released most
+          recently - and Selenium 4.46 removed org.openqa.selenium.ContextAware, which java-client
+          still implements. The result is a NoClassDefFoundError at session creation on a build
+          that compiled yesterday. Pinning the BOM makes the build reproducible; bump it
+          deliberately after checking java-client's compatibility.
+        -->
+        <selenium.version>4.26.0</selenium.version>
+        <testng.version>7.10.2</testng.version>
+        <assertj.version>3.25.3</assertj.version>
+        <slf4j.version>2.0.13</slf4j.version>
+
+        <surefire.plugin.version>3.2.5</surefire.plugin.version>
+        <compiler.plugin.version>3.13.0</compiler.plugin.version>
+
+        <!-- Which suite to run: override with -Dsuite.file=testng-ios.xml -->
+        <suite.file>testng.xml</suite.file>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-bom</artifactId>
+                <version>${selenium.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Appium client; Selenium comes in transitively at the version pinned above -->
+        <dependency>
+            <groupId>io.appium</groupId>
+            <artifactId>java-client</artifactId>
+            <version>${appium.version}</version>
+        </dependency>
+
+        <!--
+          TestNG rather than JUnit here (Task 1 uses JUnit 5) because mobile suites need three
+          things TestNG gives natively: IRetryAnalyzer for genuinely flaky device interactions,
+          ITestListener for screenshot-on-failure, and XML suites for per-device/per-platform runs.
+        -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler.plugin.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.plugin.version}</version>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/${suite.file}</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
