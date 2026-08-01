@@ -3,6 +3,7 @@ package com.sayed.wikipedia.pages;
 import com.sayed.wikipedia.components.SnackbarComponent;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.iOSXCUITFindBy;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import java.util.Optional;
@@ -32,6 +33,15 @@ public class ArticlePage extends BasePage {
     @iOSXCUITFindBy(accessibility = "Save for later")
     private WebElement saveButton;
 
+    /**
+     * Entries of the context menu a long press on Save raises once the article is already saved
+     * ("Add to another reading list", "Move from Saved to another reading list", "Remove from
+     * Saved"). They share one id and are told apart by their label.
+     */
+    private static final By SAVE_MENU_ENTRY = By.id("org.wikipedia:id/title");
+
+    private static final String ADD_TO_ANOTHER_LIST = "Add to another reading list";
+
     @Override
     protected WebElement pageIdentifier() {
         return articleActionBar;
@@ -52,8 +62,13 @@ public class ArticlePage extends BasePage {
      *
      * <p>Primary route is the snackbar's "Add to list" action, which is what the app offers the
      * user. The snackbar auto-dismisses after a few seconds, so if it has already gone the method
-     * falls back to long-pressing Save, which the app maps to the same dialog. Both routes are real
-     * app behaviour - this is not locator guesswork.
+     * falls back to long-pressing Save. Both routes are real app behaviour - this is not locator
+     * guesswork.
+     *
+     * <p>The two routes do not land in the same place. The snackbar action opens the chooser
+     * directly; a long press opens a context menu whose "Add to another reading list" entry is what
+     * opens the chooser. Treating the long press as if it reached the chooser is what made this
+     * step time out against an already-saved article.
      */
     public AddToReadingListDialog openAddToReadingListDialog(SnackbarComponent snackbar) {
         if (snackbar.tapAction()) {
@@ -61,10 +76,27 @@ public class ArticlePage extends BasePage {
         } else {
             log.info("Snackbar had already dismissed - long-pressing Save instead");
             longPress(saveButton);
+            openChooserFromSaveMenu();
         }
         AddToReadingListDialog dialog = new AddToReadingListDialog();
         dialog.verifyLoaded();
         return dialog;
+    }
+
+    /**
+     * Steps through the long-press context menu to the list chooser.
+     *
+     * <p>A no-op when the menu is not showing: the app raises it only for an article that is
+     * already saved, and the caller's next action verifies the chooser either way.
+     */
+    private void openChooserFromSaveMenu() {
+        findAll(SAVE_MENU_ENTRY).stream()
+                .filter(entry -> ADD_TO_ANOTHER_LIST.equals(textOf(entry)))
+                .findFirst()
+                .ifPresent(entry -> {
+                    log.info("Choosing '{}' from the Save context menu", ADD_TO_ANOTHER_LIST);
+                    entry.click();
+                });
     }
 
     /** Convenience for the common "save, then choose a list" sequence. */
