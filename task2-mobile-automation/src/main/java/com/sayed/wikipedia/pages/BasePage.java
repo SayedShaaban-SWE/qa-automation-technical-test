@@ -1,5 +1,6 @@
 package com.sayed.wikipedia.pages;
 
+import com.sayed.wikipedia.components.Interstitials;
 import com.sayed.wikipedia.config.ConfigManager;
 import com.sayed.wikipedia.config.MobilePlatform;
 import com.sayed.wikipedia.driver.DriverManager;
@@ -45,6 +46,8 @@ public abstract class BasePage {
 
     protected static final ConfigManager CONFIG = ConfigManager.get();
     private static final Duration PROXY_LOOKUP_TIMEOUT = Duration.ofSeconds(2);
+    /** Slices {@link #verifyLoadedClearingPromos()} splits the wait budget into. */
+    private static final int PROMO_CLEAR_ATTEMPTS = 3;
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
     protected final AppiumDriver driver;
@@ -92,6 +95,33 @@ public abstract class BasePage {
         } catch (TimeoutException | NoSuchElementException e) {
             throw new IllegalStateException(
                     pageName() + " did not appear within " + timeout.toSeconds() + "s", e);
+        }
+    }
+
+    /**
+     * Blocks until this page is on screen, clearing first-run promos in between.
+     *
+     * <p>Some promos are raised only once the screen underneath has finished rendering, so a single
+     * dismissal before the wait can run too early and the promo then lands on top. Worse, a promo is
+     * its own window: while one is up the page underneath is not in the accessibility tree at all,
+     * so the wait cannot see the page even though it is there.
+     *
+     * <p>Splitting the same total budget into slices and re-clearing between them keeps the ordinary
+     * case fast while making the late-promo case recoverable. The total wait is unchanged.
+     */
+    public void verifyLoadedClearingPromos() {
+        Duration slice = CONFIG.waitTimeout().dividedBy(PROMO_CLEAR_ATTEMPTS);
+        for (int attempt = 1; attempt <= PROMO_CLEAR_ATTEMPTS; attempt++) {
+            new Interstitials().dismissAll();
+            try {
+                verifyLoaded(slice);
+                return;
+            } catch (IllegalStateException e) {
+                if (attempt == PROMO_CLEAR_ATTEMPTS) {
+                    throw e;
+                }
+                log.debug("{} not visible yet - clearing promos and retrying", pageName());
+            }
         }
     }
 

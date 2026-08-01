@@ -25,9 +25,25 @@ public class BottomNavBar extends BasePage {
     @iOSXCUITFindBy(accessibility = "Saved")
     private WebElement savedTab;
 
+    @AndroidFindBy(id = "org.wikipedia:id/nav_tab_search")
+    @iOSXCUITFindBy(accessibility = "Search")
+    private WebElement searchTab;
+
     @Override
     protected WebElement pageIdentifier() {
         return savedTab;
+    }
+
+    /**
+     * Selects the Search tab.
+     *
+     * <p>Returns nothing rather than a page object: the tab lands on an intermediate screen (recent
+     * searches, with a card that opens the real input), and {@link HomePage#openSearch()} owns that
+     * hop. Modelling the intermediate as its own page would add a class the scenario never names.
+     */
+    public void openSearchTab() {
+        log.info("Navigating to the Search tab");
+        tap(searchTab);
     }
 
     public SavedListsPage openSaved() {

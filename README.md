@@ -4,8 +4,8 @@ Two independent Java automation projects, one per task.
 
 | | Task | Stack | Status |
 |---|---|---|---|
-| **Task 1** | [`task1-api-automation/`](task1-api-automation) — REST API tests for `api.zippopotam.us` | Java 17 · Maven · REST Assured · JUnit 5 · AssertJ | **83 tests, all passing** (verified locally) |
-| **Task 2** | [`task2-mobile-automation/`](task2-mobile-automation) — E2E "save an article to a reading list" on the Wikipedia app | Java 17 · Maven · Appium 9 · TestNG · AssertJ | **Compiles and wires up cleanly**; needs an emulator/device to execute (see note below) |
+| **Task 1** | [`task1-api-automation/`](task1-api-automation) — REST API tests for `api.zippopotam.us` | Java 25 · Maven · REST Assured 6 · JUnit 6 · AssertJ | **83 tests, all passing** (verified locally, 1 Aug 2026) |
+| **Task 2** | [`task2-mobile-automation/`](task2-mobile-automation) — E2E "save an article to a reading list" on the Wikipedia app | Java 25 · Maven · Appium 10 · TestNG · AssertJ | **Runs against a real emulator; not green yet** — blocked by a system keyboard dialog, not by the app or the framework (see below) |
 
 Each project has its own README with full setup and run instructions:
 
@@ -16,7 +16,7 @@ Each project has its own README with full setup and run instructions:
 
 ## Quick start
 
-**Prerequisites shared by both:** JDK 17+ and Maven 3.8+.
+**Prerequisites shared by both:** JDK 25+ and Maven 3.9+.
 
 ```bash
 # Task 1 — runs immediately, needs only an internet connection
@@ -70,14 +70,22 @@ quietly becomes a feature.
 
 ## On Task 2's status — stated plainly
 
-The mobile project **compiles cleanly and initialises end to end**: configuration loads, the driver
-factory builds the Android capabilities, the TestNG listeners fire, and the run terminates at
-exactly the expected point — `ConnectException` reaching the Appium server, because this machine has
-no Android SDK, emulator or Appium install.
+The mobile suite **has been executed against a real Android emulator** (Pixel API 36, Appium 10,
+`org.wikipedia` r/50598), and that is where most of its current shape came from. Reading the app's
+source got the first draft; running it rewrote a good deal of it. Onboarding and the search results
+list are Jetpack Compose now and publish no resource ids at all; the Explore feed's search bar has
+become a bottom-navigation tab; the article's WebView node disappears from the native tree at exactly
+the moment the article finishes loading; and a clean profile raises four separate first-run promos,
+each of which is its own window that hides the screen underneath. None of that is visible from the
+source alone.
 
-**It has not been executed against a real device.** Rather than guess at locators, every Android
-locator was taken from the Wikipedia app's own source (`res/values/ids.xml`, `NavTab.kt`,
-`PageActionItem.kt` and the layout XMLs) — the exact files are listed in
-[`pages/package-info.java`](task2-mobile-automation/src/main/java/com/sayed/wikipedia/pages/package-info.java).
-The app's version-to-version drift is the remaining risk, and the Task 2 README says exactly which
-files to touch if a locator has moved.
+**The scenario is not green yet, and the reason is the emulator rather than the app.** The run
+reaches step 2 and stops there because Gboard raises a *"Try out your stylus"* first-run dialog over
+the Wikipedia window the moment the search field takes focus, so the search input is not in the
+accessibility tree to be found. The failure screenshot shows it directly. Disabling that system promo
+on the image — or scripting the AVD so "clean device" means the same thing every time — is the fix,
+and it is environment setup rather than framework work.
+
+That is recorded here rather than smoothed over, for the same reason Task 1 keeps its five failing
+defect tests: a suite that reports precisely where it stops is worth more than one tuned until it
+looks green. The Task 2 README has the full detail, including what each locator changed from and why.

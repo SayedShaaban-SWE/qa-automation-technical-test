@@ -14,19 +14,19 @@
     <description>API test framework for the api.zippopotam.us/{country}/{postal-code} endpoint</description>
 
     <properties>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <rest-assured.version>5.4.0</rest-assured.version>
-        <junit.version>5.10.2</junit.version>
-        <assertj.version>3.25.3</assertj.version>
-        <jackson.version>2.17.0</jackson.version>
-        <allure.version>2.25.0</allure.version>
-        <aspectj.version>1.9.21</aspectj.version>
+        <rest-assured.version>6.0.1</rest-assured.version>
+        <junit.version>6.1.2</junit.version>
+        <assertj.version>3.27.7</assertj.version>
+        <jackson.version>2.22.1</jackson.version>
+        <allure.version>2.35.4</allure.version>
+        <aspectj.version>1.9.25</aspectj.version>
 
-        <surefire.plugin.version>3.2.5</surefire.plugin.version>
-        <compiler.plugin.version>3.13.0</compiler.plugin.version>
-        <allure.maven.version>2.12.0</allure.maven.version>
+        <surefire.plugin.version>3.5.6</surefire.plugin.version>
+        <compiler.plugin.version>3.15.0</compiler.plugin.version>
+        <allure.maven.version>3.0.3</allure.maven.version>
 
         <!--
           Tests tagged "known-defect" assert the CORRECT behaviour of endpoints that are
@@ -103,9 +103,10 @@
         </dependency>
 
         <!-- Reporting: safe to have on the classpath; the aspectj agent is opt-in (see 'reporting' profile) -->
+        <!-- Renamed upstream: allure-junit5 was relocated to allure-jupiter in Allure 2.35 -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-junit5</artifactId>
+            <artifactId>allure-jupiter</artifactId>
         </dependency>
         <dependency>
             <groupId>io.qameta.allure</groupId>

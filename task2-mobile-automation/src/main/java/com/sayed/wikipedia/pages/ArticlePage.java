@@ -10,16 +10,23 @@ import java.util.Optional;
 /**
  * A rendered article, and the action bar underneath it.
  *
- * <p>The article body is a WebView, so the only reliable native handles are the WebView container
- * itself and the action-bar buttons. That is deliberate: reaching into the WebView's DOM to read a
- * heading would couple the suite to Wikipedia's page markup, which changes far more often than the
- * app's own layout.
+ * <p>The article body is a WebView, so the only reliable native handles are the action-bar buttons
+ * beneath it. That is deliberate: reaching into the WebView's DOM to read a heading would couple the
+ * suite to Wikipedia's page markup, which changes far more often than the app's own layout.
+ *
+ * <h2>Why the identifier is the action bar and not the WebView</h2>
+ * {@code page_web_view} looks like the obvious identifier and is not usable as one: it is only in
+ * the native tree until the WebView publishes its own content, at which point UiAutomator replaces
+ * that node with the rendered page's accessibility nodes and the id stops resolving. Waiting on it
+ * is therefore a race that a fast device loses - it disappears precisely because the article
+ * finished loading. The action bar is native, is present for as long as an article is open, and is
+ * what this page actually operates on.
  */
 public class ArticlePage extends BasePage {
 
-    @AndroidFindBy(id = "org.wikipedia:id/page_web_view")
-    @iOSXCUITFindBy(className = "XCUIElementTypeWebView")
-    private WebElement articleWebView;
+    @AndroidFindBy(id = "org.wikipedia:id/page_actions_tab_layout")
+    @iOSXCUITFindBy(className = "XCUIElementTypeToolbar")
+    private WebElement articleActionBar;
 
     @AndroidFindBy(id = "org.wikipedia:id/page_save")
     @iOSXCUITFindBy(accessibility = "Save for later")
@@ -27,7 +34,7 @@ public class ArticlePage extends BasePage {
 
     @Override
     protected WebElement pageIdentifier() {
-        return articleWebView;
+        return articleActionBar;
     }
 
     /**

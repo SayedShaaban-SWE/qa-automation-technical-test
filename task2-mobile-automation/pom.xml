@@ -14,25 +14,25 @@
     <description>Appium + TestNG page-object framework automating "save an article to a reading list"</description>
 
     <properties>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <appium.version>9.4.0</appium.version>
+        <appium.version>10.1.1</appium.version>
         <!--
-          Pinned deliberately. io.appium:java-client declares Selenium as an open range
-          ("[4.26.0, 5.0)"), so an unpinned build resolves whatever Selenium released most
-          recently - and Selenium 4.46 removed org.openqa.selenium.ContextAware, which java-client
-          still implements. The result is a NoClassDefFoundError at session creation on a build
-          that compiled yesterday. Pinning the BOM makes the build reproducible; bump it
-          deliberately after checking java-client's compatibility.
+          Still pinned deliberately. io.appium:java-client declares Selenium as an open range
+          ("[4.42.0, 5.0)"), so an unpinned build resolves whatever Selenium released most
+          recently and the build stops being reproducible. The ContextAware breakage that forced
+          this pin at Selenium 4.26 / java-client 9.4.0 is gone: java-client 10.x is built against
+          the post-removal API, so the pin is now about reproducibility rather than a workaround.
+          Bump it deliberately after checking java-client's compatibility.
         -->
-        <selenium.version>4.26.0</selenium.version>
-        <testng.version>7.10.2</testng.version>
-        <assertj.version>3.25.3</assertj.version>
-        <slf4j.version>2.0.13</slf4j.version>
+        <selenium.version>4.46.0</selenium.version>
+        <testng.version>7.12.0</testng.version>
+        <assertj.version>3.27.7</assertj.version>
+        <slf4j.version>2.0.18</slf4j.version>
 
-        <surefire.plugin.version>3.2.5</surefire.plugin.version>
-        <compiler.plugin.version>3.13.0</compiler.plugin.version>
+        <surefire.plugin.version>3.5.6</surefire.plugin.version>
+        <compiler.plugin.version>3.15.0</compiler.plugin.version>
 
         <!-- Which suite to run: override with -Dsuite.file=testng-ios.xml -->
         <suite.file>testng.xml</suite.file>

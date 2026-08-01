@@ -1,5 +1,6 @@
 package com.sayed.wikipedia.pages;
 
+import com.sayed.wikipedia.components.Interstitials;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.iOSXCUITFindBy;
 import org.openqa.selenium.By;
@@ -39,6 +40,9 @@ public class SavedListsPage extends BasePage {
     /** Opens the filter and narrows the visible lists down to those matching {@code query}. */
     public SavedListsPage searchForList(String query) {
         log.info("Filtering reading lists by '{}'", query);
+        // The tab can carry a suggestion card above the lists; it consumes enough vertical space to
+        // push rows off screen, so it goes before the list is filtered or read.
+        new Interstitials().dismissAll();
         tap(filterListsButton);
         type(filterInput, query);
         // Wait for the filtered result rather than a fixed pause - filtering is asynchronous.
@@ -65,8 +69,9 @@ public class SavedListsPage extends BasePage {
         log.info("Opening reading list '{}'", listName);
         list.click();
 
+        // Opening a list for the first time raises a "share this list" coach mark over it.
         ReadingListDetailPage detail = new ReadingListDetailPage();
-        detail.verifyLoaded();
+        detail.verifyLoadedClearingPromos();
         return detail;
     }
 }

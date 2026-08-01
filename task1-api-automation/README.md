@@ -2,13 +2,13 @@
 
 API test framework for the single endpoint `api.zippopotam.us/{country}/{postal-code}`.
 
-**Java 17 · Maven · REST Assured 5 · JUnit 5 · AssertJ · JSON Schema**
+**Java 25 · Maven · REST Assured 6 · JUnit 6 · AssertJ · JSON Schema**
 
 ---
 
 ## Running it
 
-**Prerequisites:** JDK 17+ and Maven 3.8+. Nothing else — no local service, no API key.
+**Prerequisites:** JDK 25+ and Maven 3.9+. Nothing else — no local service, no API key.
 
 ```bash
 cd task1-api-automation
@@ -23,6 +23,19 @@ BUILD SUCCESS
 ```
 
 Reports: `target/surefire-reports/`.
+
+Last verified: **1 August 2026**, 83/83 passing on JDK 25.
+
+### Toolchain
+
+The stack is current rather than pinned to whatever was newest when the project started: REST Assured
+6.0.1, JUnit 6.1.2, AssertJ 3.27.7, Jackson 2.22.1, Allure 2.35.4, compiled at release 25. Two notes
+for anyone bumping it further:
+
+- **Allure renamed its JUnit 5 integration.** `allure-junit5` was relocated to `allure-jupiter` in
+  Allure 2.35. The old coordinate still resolves but is a dead end; `pom.xml` uses the new one.
+- **JUnit 6 requires Java 17+ at minimum** and drops the legacy Vintage engine. Nothing here used it,
+  so the upgrade was a version bump and no code change.
 
 ### Useful variations
 
